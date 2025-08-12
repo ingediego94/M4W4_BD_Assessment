@@ -1,0 +1,36 @@
+:root{
+    --font-mono: arial, monospace;
+    --transition: all 0.1s cubic-bezier(0.645, 0.045, 0.355, 1)
+}
+
+/* * {
+    font-family: var(--font-mono);
+} */
+
+.exit {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 2rem;
+    margin-top: 2rem;
+}
+
+#logout{
+    background-color: #0a55e0; 
+    color: white;
+    padding: center;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 9rem;
+    height: 2.5rem;
+}
+
+#logout:hover{
+    background-color: #6A00FE ; 
+    font-weight: bold;
+}
+
+.btnEdit, .btnDelete {
+    width: 4.5rem;
+    height: 2.3rem;
+}
