@@ -99,8 +99,8 @@ app.put('/clients/:id', (req, res) => {
         UPDATE clients
         SET name = ?, lastname_1 = ?, lastname_2 = ?, identification_numb = ?, address = ?, phone = ?, email = ?
         WHERE id_client = ?
-    `;
-    db.query(sql, [name, lastname_1, lastname_2, identification_numb, address, phone, email], (err, result) => {
+    `;                                                                                  // MISSING : ,id
+    db.query(sql, [name, lastname_1, lastname_2, identification_numb, address, phone, email, id], (err, result) => {
         if (err) {
             console.error('Error updating client:', err);
             return res.status(500).json({ error: 'Error updating client.' });

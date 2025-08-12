@@ -33,36 +33,31 @@ const uploadCSVBack = (filePath, callback) => {
                         if (pending === 0 && callback) callback();
                     });
                 });
-            } else if ('name' in rows[0] && 'lastname' in rows[0] && 'email' in rows[0] && 'password' in rows[0]) {
-                // Insert users
+            } else if ('status' in rows[0] ) {
+                // Insert status
                 let pending = rows.length;
-                rows.forEach(client => {
-                    const query = `INSERT INTO users(name, lastname, email, password, role) VALUES(?,?,?,?,?)`;
+                rows.forEach(status => {
+                    const query = `INSERT INTO status(status) VALUES(?)`;
                     const values = [
-                        client.name,
-                        client.lastname,
-                        client.email,
-                        client.password,
-                        client.role || 'user'
+                        status.status
                     ];
                     connection.query(query, values, (err) => {
                         pending--;
-                        if (err) console.error("Error to insert clients", err);
+                        if (err) console.error("Error to insert 'status'", err);
                         if (pending === 0 && callback) callback();
                     });
                 });
-            } else if ('city' in rows[0] && 'status' in rows[0]) {
-                // Insert cities
+            } else if ('platform' in rows[0] ) {
+                // Insert platforms
                 let pending = rows.length;
-                rows.forEach(city => {
-                    const query = `INSERT INTO cities(city, status) VALUES(?,?)`;
+                rows.forEach(platform => {
+                    const query = `INSERT INTO platforms (platform) VALUES(?)`;
                     const values = [
-                        city.city,
-                        city.status
+                        platform.platform
                     ];
                     connection.query(query, values, (err) => {
                         pending--;
-                        if (err) console.error("Error to insert cities", err);
+                        if (err) console.error("Error to insert platforms", err);
                         if (pending === 0 && callback) callback();
                     });
                 });
