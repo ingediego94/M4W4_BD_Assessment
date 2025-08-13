@@ -3,7 +3,7 @@ const csv = require('csv-parser');
 const connection = require('./db');
 
 const uploadCSVBack = (filePath, callback) => {
-    const rows = [];
+    const rows = [];  
     fs.createReadStream(filePath)
         .pipe(csv())
         .on('data', (row) => {
@@ -61,9 +61,9 @@ const uploadCSVBack = (filePath, callback) => {
                         if (pending === 0 && callback) callback();
                     });
                 });
-            }else if ('bill_number' in rows[0] && 'period_year' in rows[0] && 'period_month' in rows[0] && 'amount_bill' in rows[0] & 'paid_amount' in rows[0] && 'id_client' in rows[0]) {
+            } else if ('bill_number' in rows[0] && 'period_year' in rows[0] && 'period_month' in rows[0] && 'amount_bill' in rows[0] && 'paid_amount' in rows[0] && 'id_client' in rows[0]) {
                 // Insert bills
-                let pending = rows.length;
+                let pending = rows.length; 
                 rows.forEach(bill => {
                     const query = `INSERT INTO bills (bill_number, period_year, period_month, amount_bill, paid_amount, id_client) VALUES(?, ?, ?, ?, ?, ?)`;
                     const values = [
@@ -80,7 +80,7 @@ const uploadCSVBack = (filePath, callback) => {
                         if (pending === 0 && callback) callback();
                     });
                 });
-            }else if ('transaction_id' in rows[0] && 'trans_date_hour' in rows[0] && 'amount_transaction' in rows[0] && 'id_trans_status' in rows[0] & 'transaction_type' in rows[0] && 'id_platform' in rows[0] && 'id_bill' in rows[0]) {
+            } else if ('transaction_id' in rows[0] && 'trans_date_hour' in rows[0] && 'amount_transaction' in rows[0] && 'id_trans_status' in rows[0] && 'transaction_type' in rows[0] && 'id_platform' in rows[0] && 'id_bill' in rows[0]) {
                 // Insert transactions
                 let pending = rows.length;
                 rows.forEach(transaction => {
