@@ -61,6 +61,45 @@ const uploadCSVBack = (filePath, callback) => {
                         if (pending === 0 && callback) callback();
                     });
                 });
+            }else if ('bill_number' in rows[0] && 'period_year' in rows[0] && 'period_month' in rows[0] && 'amount_bill' in rows[0] & 'paid_amount' in rows[0] && 'id_client' in rows[0]) {
+                // Insert bills
+                let pending = rows.length;
+                rows.forEach(bill => {
+                    const query = `INSERT INTO bills (bill_number, period_year, period_month, amount_bill, paid_amount, id_client) VALUES(?, ?, ?, ?, ?, ?)`;
+                    const values = [
+                        bill.bill_number,
+                        bill.period_year,
+                        bill.period_month,
+                        bill.amount_bill,
+                        bill.paid_amount,
+                        bill.id_client
+                    ];
+                    connection.query(query, values, (err) => {
+                        pending--;
+                        if (err) console.error("Error to insert bills", err);
+                        if (pending === 0 && callback) callback();
+                    });
+                });
+            }else if ('transaction_id' in rows[0] && 'trans_date_hour' in rows[0] && 'amount_transaction' in rows[0] && 'id_trans_status' in rows[0] & 'transaction_type' in rows[0] && 'id_platform' in rows[0] && 'id_bill' in rows[0]) {
+                // Insert transactions
+                let pending = rows.length;
+                rows.forEach(transaction => {
+                    const query = `INSERT INTO transactions (transaction_id, trans_date_hour, amount_transaction, id_trans_status, transaction_type, id_platform, id_bill) VALUES(?,?,?,?,?,?,?)`;
+                    const values = [
+                        transaction.transaction_id,
+                        transaction.trans_date_hour,
+                        transaction.amount_transaction,
+                        transaction.id_trans_status,
+                        transaction.transaction_type,
+                        transaction.id_platform,
+                        transaction.id_bill
+                    ];
+                    connection.query(query, values, (err) => {
+                        pending--;
+                        if (err) console.error("Error to insert transaction", err);
+                        if (pending === 0 && callback) callback();
+                    });
+                });
             } else {
                 // Unknown format
                 if (callback) callback(new Error('Unknown CSV format'));
