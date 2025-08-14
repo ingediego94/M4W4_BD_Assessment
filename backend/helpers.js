@@ -2,23 +2,23 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const connection = require('./db');
 
-const uploadCSVBack = (filePath, callback) => {
+const uploadCSVBack = (filePath, callback) => {     // Function that receives csv route and a callback function.
     const rows = [];  
-    fs.createReadStream(filePath)
+    fs.createReadStream(filePath)           // Creeate a reading flow of csv on the specified path
         //.pipe(csv())
-        .pipe(csv({
+        .pipe(csv({         // Pass the flow to "parser csv"
             mapHeaders: ({ header }) => header.trim().toLowerCase()     // To delete spaces and convert to lowsercase
         }))
-        .on('data', (row) => {
-            rows.push(row);
+        .on('data', (row) => {          // Event that excecutes once read a row of csv
+            rows.push(row);             // Save each row on array named 'rows'
         })
-        .on('end', () => {
-            if (rows.length === 0) return callback && callback();
+        .on('end', () => {              // Event that excecutes when ends of reading the csv file
+            if (rows.length === 0) return callback && callback();       // if didnt  read none row, excecutes 'callback' and exit
 
             // Detect type by columns
             if ('name' in rows[0] && 'lastname_1' in rows[0] && 'lastname_2' in rows[0] && 'identification_numb' in rows[0] && 'address' in rows[0] && 'phone' in rows[0] && 'email' in rows[0]) {
                 // Insert clients
-                let pending = rows.length;
+                let pending = rows.length;          // Counter of pending insertions
                 rows.forEach(client => {
                     const query = `INSERT INTO clients(name, lastname_1, lastname_2, identification_numb, address, phone, email) VALUES(?,?,?,?,?,?,?)`;
                     const values = [
@@ -31,9 +31,9 @@ const uploadCSVBack = (filePath, callback) => {
                         client.email
                     ];
                     connection.query(query, values, (err) => {
-                        pending--;
+                        pending--;      // Discount the counter each time that an insertion is completed.
                         if (err) console.error("Error to insert clients", err);
-                        if (pending === 0 && callback) callback();
+                        if (pending === 0 && callback) callback();      // Calls to callback when all insertions has been completed.
                     });
                 });
             } else if ('status' in rows[0] ) {
@@ -108,6 +108,7 @@ const uploadCSVBack = (filePath, callback) => {
                 if (callback) callback(new Error('Unknown CSV format'));
             }
         })
+        // Event to catch any error during reading or parsing of .csv file.
         .on('error', (err) => {
             if (callback) callback(err);
         });

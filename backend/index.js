@@ -1,25 +1,25 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const db = require('./db');
-const { uploadCSVBack } = require('./helpers');
-const cors = require('cors'); 
-const multer = require('multer');
+const express = require('express');         // Framework to create server and manage http routes
+const bodyParser = require('body-parser');      // Midddleware to parse request bodies en JSON format.
+const db = require('./db');                 // Connection to DB
+const { uploadCSVBack } = require('./helpers');     // Function to process and upload csv to BD
+const cors = require('cors');               // Middleware to allow resquest from others domains.
+const multer = require('multer');           // Middleware to admin uploaded files.
 const upload = multer({ dest: 'uploads/' }); // Temp folder for uploads
 
 
-const app = express();
+const app = express();                      // It creates an Express app
 
 // Middleware to enable CORS
-app.use(cors()); 
+app.use(cors());                            // Allows that other domains can consume your API
 
-app.use(bodyParser.json());
+app.use(bodyParser.json());                 // It converts requests bodies with JSON to JS object.
 
 
 
 // Endpoint to insert new clients:
-app.post('/clients', (req, res) => {
-    const { name, lastname_1, lastname_2, identification_numb, address, phone, email } = req.body;
-
+app.post('/clients', (req, res) => {        // Endpoint to create a clients
+    const { name, lastname_1, lastname_2, identification_numb, address, phone, email } = req.body;      // Extract data from body
+    // Parametrized query in SQL:
     const sql = `
         INSERT INTO clients (name, lastname_1, lastname_2, identification_numb, address, phone, email)
         VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -30,24 +30,25 @@ app.post('/clients', (req, res) => {
             console.error('Error to insert client(s):', err);
             return res.status(500).json({ error: 'Error inserting client(s).' });
         }
-        res.status(201).json({ message: 'Client(s) inserted successfully', id: result.insertId });
+        res.status(201).json({ message: 'Client(s) inserted successfully', id: result.insertId });    // Response with ID
     });
 });
 
 
 // Endpoint to upload CSV and insert events in bulk:
 
-app.post('/uploadCSV', upload.single('csv'), (req, res) => {
+app.post('/uploadCSV', upload.single('csv'), (req, res) => {        // Upload of csv file
+    // option if csv file wasn't sended.
     if (!req.file) {
         return res.status(400).json({ result: 'No file uploaded' });
     }
-    const filePath = req.file.path;
-    uploadCSVBack(filePath, (err) => {
+    const filePath = req.file.path;     // Temp route to the file
+    uploadCSVBack(filePath, (err) => {      // Calls the function that process .csv
         if (err) {
             console.error(err);
             return res.status(500).json({ result: 'Error processing CSV' });
         }
-        res.json({ result: 'Database updated' });
+        res.json({ result: 'Database updated' });   // Success
     });
 });
 
@@ -75,7 +76,7 @@ app.get('/getClients', (req, res) => {
 
 // Endpoint to delete client:
 app.delete('/clients/:id', (req, res) => {
-    const { id } = req.params;
+    const { id } = req.params;      // obtains ID from url
     const sql = `
         DELETE FROM clients 
         WHERE id_client = ?
@@ -93,8 +94,8 @@ app.delete('/clients/:id', (req, res) => {
 
 // Endpoint to update client:
 app.put('/clients/:id', (req, res) => {
-    const { id } = req.params;
-    const { name, lastname_1, lastname_2, identification_numb, address, phone, email } = req.body;
+    const { id } = req.params;      // ID on url
+    const { name, lastname_1, lastname_2, identification_numb, address, phone, email } = req.body;      // Bodies data
     const sql = `
         UPDATE clients
         SET name = ?, lastname_1 = ?, lastname_2 = ?, identification_numb = ?, address = ?, phone = ?, email = ?
