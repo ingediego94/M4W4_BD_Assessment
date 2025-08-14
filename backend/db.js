@@ -1,6 +1,6 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2');    // Import mysql2 package
 
-const db = mysql.createConnection({
+const db = mysql.createConnection({     // Create a connection with mysql, especifically to "pd_diego_vallejo_hopper"
     host:'localhost',
     user:'root',
     password:'KiraAmarilla33%',

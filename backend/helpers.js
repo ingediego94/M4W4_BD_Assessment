@@ -5,7 +5,10 @@ const connection = require('./db');
 const uploadCSVBack = (filePath, callback) => {
     const rows = [];  
     fs.createReadStream(filePath)
-        .pipe(csv())
+        //.pipe(csv())
+        .pipe(csv({
+            mapHeaders: ({ header }) => header.trim().toLowerCase()     // To delete spaces and convert to lowsercase
+        }))
         .on('data', (row) => {
             rows.push(row);
         })
@@ -22,7 +25,7 @@ const uploadCSVBack = (filePath, callback) => {
                         client.name,
                         client.lastname_1,
                         client.lastname_2,
-                        client.identification_numb,
+                        Number(client.identification_numb),
                         client.address,
                         client.phone,
                         client.email
@@ -68,11 +71,11 @@ const uploadCSVBack = (filePath, callback) => {
                     const query = `INSERT INTO bills (bill_number, period_year, period_month, amount_bill, paid_amount, id_client) VALUES(?, ?, ?, ?, ?, ?)`;
                     const values = [
                         bill.bill_number,
-                        bill.period_year,
-                        bill.period_month,
-                        bill.amount_bill,
-                        bill.paid_amount,
-                        bill.id_client
+                        Number(bill.period_year),
+                        Number(bill.period_month),
+                        Number(bill.amount_bill),
+                        Number(bill.paid_amount),
+                        Number(bill.id_client)
                     ];
                     connection.query(query, values, (err) => {
                         pending--;
@@ -84,15 +87,15 @@ const uploadCSVBack = (filePath, callback) => {
                 // Insert transactions
                 let pending = rows.length;
                 rows.forEach(transaction => {
-                    const query = `INSERT INTO transactions (transaction_id, trans_date_hour, amount_transaction, id_trans_status, transaction_type, id_platform, id_bill) VALUES(?,?,?,?,?,?,?)`;
+                    const query = `INSERT INTO transactions (transaction_id, trans_date_hour, amount_transaction, id_trans_status, transaction_type, id_platform, id_bill) VALUES(?, ?, ?, ?, ?, ?, ?)`;
                     const values = [
                         transaction.transaction_id,
                         transaction.trans_date_hour,
-                        transaction.amount_transaction,
-                        transaction.id_trans_status,
+                        Number(transaction.amount_transaction),
+                        Number(transaction.id_trans_status),
                         transaction.transaction_type,
-                        transaction.id_platform,
-                        transaction.id_bill
+                        Number(transaction.id_platform),
+                        Number(transaction.id_bill)
                     ];
                     connection.query(query, values, (err) => {
                         pending--;
